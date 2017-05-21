@@ -80,7 +80,7 @@ class DrcsConverter:
         palette = self.palette
 
         # write palette section
-        for i in xrange(0, self._ncolor * 3, 3):
+        for i in range(0, self._ncolor * 3, 3):
             no = i / 3
             r = palette[i + 0] * 100 / 256
             g = palette[i + 1] * 100 / 256
@@ -90,12 +90,12 @@ class DrcsConverter:
     def _write_colored_sixel(self, output, data, width, top, keycolor):
 
         n = 1
-        for y in xrange(top, top + 6):
+        for y in range(top, top + 6):
             p = y * width
             cached_no = data[p]
             count = 1
             c = -1
-            for x in xrange(0, width):
+            for x in range(0, width):
                 color_no = data[p + x]
                 if color_no == cached_no and count < 255:
                     count += 1
@@ -140,19 +140,19 @@ class DrcsConverter:
         width = self.cellwidth * self.columns
 
         if self.palette:
-            for y in xrange(cellheight * n, cellheight * (n + 1), 6):
+            for y in range(cellheight * n, cellheight * (n + 1), 6):
                 self._write_colored_sixel(output, data, width, y, -1)
         else:
             startpos = width * cellheight * n
             positive = 255 if self.negate else 0
-            for c in xrange(0, self.columns):
+            for c in range(0, self.columns):
                 startx = cellwidth * c
-                for y in xrange(0, cellheight, 6):
+                for y in range(0, cellheight, 6):
                     if y != 0:
                         output.write("/")
                     for x in range(0, cellwidth):
                         acc = 0
-                        for i in xrange(0, 6):
+                        for i in range(0, 6):
                             acc = acc * 2
                             index = (y + 5 - i) * width + startx + x
                             if data[startpos + index] == positive:
@@ -170,7 +170,7 @@ class DrcsConverter:
             import codecs
             output = codecs.getwriter("utf-8")(output)
 
-        for n in xrange(0, self.rows):
+        for n in range(0, self.rows):
             self.__write_header(output, 0x40 + n + startoffset)
             if self._ncolor > 1:
                 self._write_sixel_palette(output)
@@ -179,18 +179,18 @@ class DrcsConverter:
 
         if not defonly:
             if self._use_unicode:
-                for dscs in xrange(startoffset, self.rows + startoffset):
-                    for c in xrange(0, self.columns):
+                for dscs in range(startoffset, self.rows + startoffset):
+                    for c in range(0, self.columns):
                         code = 0x100000 | 0x40 + dscs << 8 | 0x21 + c
                         code -= 0x10000
                         c1 = (code >> 10) + 0xd800
                         c2 = (code & 0x3ff) + 0xdc00
-                        output.write(unichr(c1) + unichr(c2))
+                        output.write(chr(c1) + chr(c2))
                     output.write("\n")
             else:
-                for dscs in xrange(0, self.rows):
+                for dscs in range(0, self.rows):
                     output.write("\x1b( %c" % (0x40 + dscs + startoffset))
-                    for c in xrange(0, self.columns):
+                    for c in range(0, self.columns):
                         output.write(chr(0x21 + c))
                     output.write("\x1b(B\n")
 

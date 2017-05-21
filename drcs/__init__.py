@@ -27,11 +27,11 @@ import sys
 import optparse
 import select
 import logging
-from drcs import DrcsWriter
+from .drcs import DrcsWriter
 
 
 def _printver():
-        print '''
+        print('''
 drcsconv %s
 Copyright (C) 2012-2014 Hayaki Saito <user@zuse.jp>.
 
@@ -47,7 +47,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
-        ''' % __version__
+        ''' % __version__)
 
 
 def _parse_args():
@@ -137,7 +137,7 @@ def _drawtext(options, args):
     import re
     text = re.sub('[\x00-\x1f\x7f]', '', text)
 
-    text = unicode(text, "utf-8", "ignore")
+    text = str(text, "utf-8", "ignore")
     from PIL import Image
     from PIL import ImageDraw
     from PIL import ImageFont
@@ -157,7 +157,7 @@ def _drawtext(options, args):
     image = Image.new('RGB', (w, h + 2), (255, 255, 255))
     draw = ImageDraw.Draw(image)
     draw.text((0, 0), text, font=font, fill=(0, 0, 0))
-    import wcwidth
+    from . import wcwidth
     columns = wcwidth.wcswidth(text)
     rows = 1
 
@@ -177,9 +177,9 @@ def _filenize(f):
     mode = os.fstat(f.fileno()).st_mode
     if stat.S_ISFIFO(mode) or os.isatty(f.fileno()):
         try:
-            from cStringIO import StringIO
+            from io import StringIO
         except ImportError:
-            from StringIO import StringIO
+            from io import StringIO
         return StringIO(f.read())
     return f
 
@@ -241,12 +241,12 @@ def _mainimpl():
             _drawtext(options, args)
         else:
             _drawimage(options, args)
-    except optparse.OptionValueError, e:
+    except optparse.OptionValueError as e:
         logging.exception(e)
-        print e
-    except Exception, e:
+        print(e)
+    except Exception as e:
         logging.exception(e)
-        print e
+        print(e)
 
 def main():
     _mainimpl()
